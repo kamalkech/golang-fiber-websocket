@@ -1,15 +1,9 @@
 package auth
 
 import (
-	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-// JWT Middleware
-var JwtMiddleware = jwtware.New(jwtware.Config{
-	SigningKey: jwtware.SigningKey{Key: []byte("secret")},
-})
 
 // RoleGuard
 func RoleGuard(requiredRoles ...string) fiber.Handler {

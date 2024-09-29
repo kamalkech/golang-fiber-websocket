@@ -5,7 +5,6 @@ import (
 	"dailycode/learn-fiber/comment"
 	"dailycode/learn-fiber/user"
 	"dailycode/learn-fiber/ws"
-	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -38,16 +37,11 @@ func main() {
 	app.Post("/login", auth.Login)
 
 	// JWT Middleware
-	var jwtMiddleware = jwtware.New(jwtware.Config{
-		SigningKey: jwtware.SigningKey{
-			Key: []byte("secret"),
-		},
-	})
-	app.Use(jwtMiddleware)
+	app.Use(auth.JwtMiddleware)
 
 	// Unauthenticated route
 	app.Get("/accessible", auth.Accessible)
-	app.Get("/restricted", jwtMiddleware, auth.Restricted)
+	app.Get("/restricted", auth.JwtMiddleware, auth.Restricted)
 	app.Get("/admin", auth.RoleGuard("admin"), auth.AdminOnly)
 	app.Get("/user", auth.RoleGuard("user"), auth.UserOnly)
 	app.Get("/any", auth.Restricted)
