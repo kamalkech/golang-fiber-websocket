@@ -16,15 +16,15 @@ var (
 )
 
 func Routes(app *fiber.App) {
-	var UserRoutes = app.Group("/users")
+	var routes = app.Group("/users")
 
 	// Get all users
-	UserRoutes.Get("/", func(c *fiber.Ctx) error {
+	routes.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("list users")
 	})
 
 	// Create new user
-	app.Post("/users", func(c *fiber.Ctx) error {
+	routes.Post("/users", func(c *fiber.Ctx) error {
 		user := new(User)
 
 		if err := c.BodyParser(user); err != nil {
