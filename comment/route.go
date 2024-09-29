@@ -63,7 +63,12 @@ func SendComments(c *websocket.Conn) {
 		commentList = append(commentList, comment)
 	}
 
-	if err := c.WriteJSON(commentList); err != nil {
+	payload := ws.Payload{
+		Type: "comments",
+		Data: commentList,
+	}
+
+	if err := c.WriteJSON(payload); err != nil {
 		log.Println("write:", err)
 	}
 }

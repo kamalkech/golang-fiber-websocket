@@ -1,7 +1,6 @@
 package main
 
 import (
-	"dailycode/learn-fiber/auth"
 	"dailycode/learn-fiber/comment"
 	"dailycode/learn-fiber/user"
 	"dailycode/learn-fiber/ws"
@@ -15,10 +14,14 @@ func main() {
 	app := fiber.New()
 
 	// Set max connections
-	app.Server().MaxConnsPerIP = 1
+	app.Server().MaxConnsPerIP = 10
 
 	// Enable cors.
 	app.Use(cors.New())
+
+	// Routes
+	user.Routes(app)
+	comment.Routes(app)
 
 	// Enable websocket.
 	app.Use("/ws", func(c *fiber.Ctx) error {
@@ -28,23 +31,6 @@ func main() {
 		}
 		return fiber.ErrUpgradeRequired
 	})
-
-	// Routes
-	user.Routes(app)
-	comment.Routes(app)
-
-	// Login route
-	app.Post("/login", auth.Login)
-
-	// JWT Middleware
-	app.Use(auth.JwtMiddleware)
-
-	// Unauthenticated route
-	app.Get("/accessible", auth.Accessible)
-	app.Get("/restricted", auth.JwtMiddleware, auth.Restricted)
-	app.Get("/admin", auth.RoleGuard("admin"), auth.AdminOnly)
-	app.Get("/user", auth.RoleGuard("user"), auth.UserOnly)
-	app.Get("/any", auth.Restricted)
 
 	// Websocket
 	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
@@ -62,7 +48,8 @@ func main() {
 
 		// Keep the connection open
 		for {
-			_, msg, err := c.ReadMessage()
+			ms, msg, err := c.ReadMessage()
+			log.Println("MS:", ms)
 			log.Println("MSG:", msg)
 
 			if err != nil {

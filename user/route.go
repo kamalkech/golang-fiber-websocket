@@ -24,7 +24,7 @@ func Routes(app *fiber.App) {
 	})
 
 	// Create new user
-	routes.Post("/users", func(c *fiber.Ctx) error {
+	routes.Post("/", func(c *fiber.Ctx) error {
 		user := new(User)
 
 		if err := c.BodyParser(user); err != nil {
@@ -64,7 +64,12 @@ func SendUsers(c *websocket.Conn) {
 		userList = append(userList, user)
 	}
 
-	if err := c.WriteJSON(userList); err != nil {
+	payload := ws.Payload{
+		Type: "users",
+		Data: userList,
+	}
+
+	if err := c.WriteJSON(payload); err != nil {
 		log.Println("write:", err)
 	}
 }
